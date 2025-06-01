@@ -1,11 +1,17 @@
-[package]
-name = "bos-cli"
-version = "0.1.0"
-edition = "2021"
+[workspace]
+resolver = "2"
+members = [
+	"crates/main",
+	"crates/shared",
+	"crates/dots",
+]
 
-[dependencies]
+[workspace.dependencies]
 toml = "0.8"
 clap = { version = "4.5", features = ["derive"] }
 anyhow = "1"
 serde = { version = "1.0", features = ["derive"] }
-
+derive_builder = "0.20"
+url = "2.5.4"
+git2 = "0.20.2"
+shellexpand = "3.1.1"

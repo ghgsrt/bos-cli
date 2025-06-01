@@ -1,0 +1,16 @@
+[package]
+name = "dotscli"
+version = "0.0.0"
+edition = "2021"
+
+[dependencies]
+toml = { workspace = true }
+clap = { workspace = true }
+anyhow = { workspace = true }
+serde = { workspace = true }
+derive_builder = { workspace = true }
+url = { workspace = true }
+git2 = { workspace = true }
+
+shared = { path = "../shared" }
+

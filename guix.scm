@@ -22,7 +22,9 @@
   (build-system cargo-build-system)
   (arguments
     `(#:cargo-inputs (("rust-anyhow" ,rust-anyhow-1)
-		      ("rust-clap" ,rust-clap-4))))
+		      ("rust-clap" ,rust-clap-4)
+		      ("rust-serde" ,rust-serde-1)
+		      ("rust-toml" ,rust-toml-0.8))))
   (home-page
     "https://github.com/Aloso/to-html/tree/master/crates/ansi-to-html")
   (synopsis "ANSI escape codes to HTML converter")

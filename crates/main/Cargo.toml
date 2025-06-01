@@ -1,0 +1,14 @@
+[package]
+name = "boscli"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+toml = { workspace = true }
+clap = { workspace = true }
+anyhow = { workspace = true }
+serde = { workspace = true }
+
+shared = { path = "../shared" }
+dotscli = { path = "../dots" }
+

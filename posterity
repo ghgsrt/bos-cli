@@ -1,0 +1,135 @@
+ let handle_homeroot = |prefix: &PathBuf| {
+                            temp_map.insert(prefix.join("root"), "/");
+                            temp_map.insert(prefix.join("home"), env.home);
+                        };
+
+                        let handle_osuser = |prefix: &PathBuf| {};
+
+                        let handleIx = |prefix: &PathBuf| {};
+
+                        let mut new_prefix = Path::new("/");
+
+                        let match_homeroot = |p: &Components| -> Result<Path> {
+                            match p.next() {
+                                Some(part) => match part {
+                                    "home" | "root" => {
+                                        if part == "home" {
+                                            new_prefix = Path::new(&env.home);
+                                        }
+                                        Ok(part)
+                                    }
+                                    _ => inclusion_err(part),
+                                },
+                                None => inclusion_err(None),
+                            }
+                        };
+                        let match_osuser = |p: &Peekable<Components>| -> Result<Path> {
+                            match p.peek() {
+                                Some(part) => match part {
+                                    "os" | "user" => {
+                                        p.next();
+                                        match p.next() {
+                                            Some(name) => {}
+                                            None => Ok(part),
+                                        }
+
+                                        Ok(Path::new(&part).join(&name).join(match_homeroot(p)?))
+                                    }
+                                    _ => inclusion_err(part),
+                                },
+                                None => inclusion_err(None),
+                            }
+                        };
+                        let match_ix = |p: &Peekable<Components>| -> Result<Path> {
+                            match p.peek() {
+                                Some(part) => match part {
+                                    "guix" | "nix" => {
+                                        p.next();
+                                        if let None = p.peek() {
+                                            // handle ix
+                                        }
+                                        Ok(Path::new(&part)
+                                            .join(match_homeroot(p).or_else(|| match_osuser(p))?))
+                                    }
+                                    _ => inclusion_err(part),
+                                },
+                                None => inclusion_err(None),
+                            }
+                        };                       //let prefix = match_homeroot(&parts)
+                        //    .or_else(|| match_osuser(&parts))
+                        //    .or_else(|| match_ix(&parts))?;
+                        //
+                        //    includes
+                        //    guix
+                        //
+                        //    guix/os/<>/home
+                        //    guix/os/<>
+                        //
+                        //
+
+                        enum HomeManager {
+                            Guix,
+                            Nix,
+                        }
+                        enum Scope {
+                            Os,
+                            User,
+                        }
+                        enum Target {
+                            Root,
+                            Home,
+                        }
+                        enum TLD {
+                            HomeManager(HomeManager),
+                            Scope(Scope),
+                            Target(Target),
+                        }
+
+                        impl From<Target> for PathBuf {
+                            fn from(value: Target) -> Self {
+                                match value {
+                                    Target::Root => PathBuf::from("/"),
+                                    Target::Home => PathBuf::from("~"),
+                                }
+                            }
+                        }
+
+                        impl HomeManager {
+                            fn from(value: str) -> Result<Self> {
+                                match value {
+                                    "guix" => Ok(HomeManager::Guix),
+                                    "nix" => Ok(HomeManager::Nix),
+                                    _ => Err("Wrong lmao"), //TODO better error
+                                }
+                            }
+                        }
+                        impl Scope {
+                            fn from(value: str) -> Result<Self> {
+                                match value {
+                                    "os" => Ok(Scope::Os),
+                                    "user" => Ok(Scope::User),
+                                    _ => Err("Wrong lmao"), //TODO better error
+                                }
+                            }
+                        }
+                        impl Target {
+                            fn from(value: str) -> Result<Self> {
+                                match value {
+                                    "root" => Ok(Target::Root),
+                                    "home" => Ok(Target::Home),
+                                    _ => Err("Wrong lmao"), //TODO better error
+                                }
+                            }
+                        }
+                        impl TLD {
+                            fn from(value: str) -> Result<Self> {
+                                match value {
+                                    "guix" | "nix" => {
+                                        Ok(TLD::HomeManager(HomeManager::from(value)?))
+                                    }
+                                    "os" | "user" => Ok(TLD::Scope(Scope::from(value)?)),
+                                    "root" | "home" => Ok(TLD::Target(Target::from(value)?)),
+                                    _ => Err("Wrong lmao"), //TODO better error
+                                }
+                            }
+                        }
